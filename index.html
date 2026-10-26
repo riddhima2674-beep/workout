@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FORM — Train for the day you actually have</title>
+<meta name="description" content="Build a workout around your time, location and goal.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap">
+<style>
+:root{--bg:#F3F1EB;--ink:#111;--lt:#F5F3EE;--ac:#C6F432;--mut:#5b5a55}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.35;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.dk :focus-visible,.ov :focus-visible{outline-color:var(--ac)}
+.meta{font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.mut{color:var(--mut)}.dk .mut,.ov .mut{color:#b4b2aa}
+.big{font-weight:900;letter-spacing:-.045em;line-height:.9;text-transform:uppercase}
+section{padding:7rem 5vw}
+.dk{background:var(--ink);color:var(--lt)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;min-height:56px;padding:0 1.8rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.9rem;border:2px solid currentColor;border-radius:999px;transition:transform .25s,background .25s,color .25s,border-color .25s}
+.btn.p{background:var(--ink);color:var(--lt);border-color:var(--ink)}
+.btn.p:hover{background:var(--ac);color:var(--ink);transform:translateY(-3px)}
+.btn.s:hover{background:var(--ink);color:var(--lt);transform:translateY(-3px)}
+.btn.a{background:var(--ac);color:var(--ink);border-color:var(--ac)}
+.btn.a:hover{transform:translateY(-3px);background:var(--lt);border-color:var(--lt)}
+.dk .btn.s:hover,.ov .btn.s:hover{background:var(--lt);color:var(--ink)}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
+/* header */
+header{position:fixed;inset:0 0 auto;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:1rem 5vw;background:rgba(243,241,235,.92);border-bottom:2px solid var(--ink)}
+.logo{font-weight:900;font-size:1.5rem;letter-spacing:-.04em}
+nav{display:flex;gap:.4rem}
+nav a{padding:.7rem 1rem;font-weight:700;font-size:.8rem;letter-spacing:.1em;border-radius:999px;transition:background .2s}
+nav a:hover{background:var(--ac)}
+/* hero */
+#top{position:relative;min-height:100svh;padding-top:8rem;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;--mx:0;--my:0}
+.fx{position:absolute;pointer-events:none;transform:translate(calc(var(--mx)*var(--d)*1px),calc(var(--my)*var(--d)*1px));transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.orb{right:6vw;top:14vh;width:30vw;height:30vw;max-width:480px;max-height:480px;border-radius:50%;background:var(--ac);border:2px solid var(--ink)}
+.ghost{right:-2vw;bottom:-3vw;font-size:34vw;-webkit-text-stroke:2px var(--ink);color:transparent;opacity:.18;line-height:.75;font-weight:900;letter-spacing:-.06em}
+.trail{right:14vw;top:34vh;width:28vw;height:2px;background:var(--ink);box-shadow:0 14px 0 var(--ink),0 28px 0 var(--ink),0 42px 0 var(--ink)}
+.hero-in{position:relative;z-index:2}
+h1{font-size:clamp(2.7rem,9.6vw,9.6rem);margin:1.2rem 0 1.6rem}
+h1 span{display:block;overflow:hidden}
+h1 i{display:block;font-style:normal;animation:up .9s cubic-bezier(.2,.8,.2,1) both}
+h1 span:nth-child(2) i{animation-delay:.1s}h1 span:nth-child(3) i{animation-delay:.2s}h1 span:nth-child(4) i{animation-delay:.3s}
+@keyframes up{from{transform:translateY(105%)}}
+.hero-in p.lead{font-size:1.2rem;max-width:30ch;margin-bottom:2rem}
+.ctas{display:flex;gap:1rem;flex-wrap:wrap}
+.hero-foot{position:relative;z-index:2;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:3rem;padding-top:1rem;border-top:2px solid var(--ink)}
+/* stats */
+.stats h2{font-size:clamp(2rem,6vw,6rem);max-width:14ch}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin:4rem 0}
+.nums b{display:block;font-size:clamp(3.5rem,11vw,10rem);font-weight:900;letter-spacing:-.05em;line-height:.9;color:var(--ac)}
+/* builder */
+.bh{display:flex;justify-content:space-between;align-items:end;gap:2rem;flex-wrap:wrap;margin-bottom:2.5rem}
+.bh h2{font-size:clamp(2.2rem,6.5vw,6.5rem)}
+.stepper{display:flex;gap:1.5rem}
+.stepper div{padding-bottom:.4rem;border-bottom:4px solid transparent;opacity:.55;transition:all .3s}
+.stepper div.on{opacity:1;border-color:var(--ink)}
+.stepper div.on::after{content:" ✓"}
+.pbar{height:6px;background:rgba(17,17,17,.15);margin-bottom:3rem}
+.pbar i{display:block;height:100%;width:0;background:var(--ink);transition:width .5s cubic-bezier(.2,.7,.2,1)}
+.q{margin-bottom:3.5rem}
+.q h3{font-size:clamp(1.3rem,2.6vw,2.2rem);font-weight:900;letter-spacing:-.02em;margin-bottom:1.2rem;text-transform:uppercase}
+.tiles{display:grid;gap:1rem}
+.tiles.c4{grid-template-columns:repeat(4,1fr)}.tiles.c3{grid-template-columns:repeat(3,1fr)}
+.tile{position:relative;text-align:left;min-height:170px;padding:1.3rem;border:2px solid var(--ink);display:flex;flex-direction:column;justify-content:space-between;transition:transform .3s cubic-bezier(.2,.7,.2,1),background .25s,color .25s;overflow:hidden}
+.tile:hover{transform:translateY(-4px);background:var(--ink);color:var(--lt)}
+.tile[aria-pressed=true]{background:var(--ac);color:var(--ink);transform:scale(1.025);box-shadow:6px 6px 0 var(--ink)}
+.tile[aria-pressed=true]::after{content:"SELECTED";position:absolute;top:1rem;right:1rem;font-size:.65rem;font-weight:800;letter-spacing:.12em}
+.tile b{font-size:clamp(2.2rem,5vw,4.5rem);font-weight:900;letter-spacing:-.04em;line-height:.95}
+.tile small{font-size:.85rem;font-weight:600}
+.tile svg{width:56px;height:32px;stroke:currentColor;fill:none;stroke-width:2.5}
+.bar-sum{position:sticky;bottom:0;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding:1rem 0;background:var(--bg);border-top:2px solid var(--ink)}
+#bt{position:fixed;inset:0;z-index:70;background:var(--ink);color:var(--lt);display:none;flex-direction:column;justify-content:center;gap:1.5rem;padding:5vw}
+#bt.on{display:flex}#bt h2{font-size:clamp(2rem,7vw,6rem)}
+#bt i{display:block;height:6px;background:var(--ac);width:0}
+#bt.on i{animation:ln 1.05s cubic-bezier(.6,0,.3,1) forwards}
+@keyframes ln{to{width:100%}}
+/* session */
+#session[hidden]{display:none}
+.strip{display:flex;gap:1.5rem;flex-wrap:wrap;padding-bottom:1rem;border-bottom:2px solid var(--ink);margin-bottom:2rem}
+#session h2{font-size:clamp(2.5rem,8vw,8rem)}
+.clock{font-size:clamp(5rem,20vw,19rem);font-weight:900;letter-spacing:-.06em;line-height:.85;margin:1rem 0}
+.rows{list-style:none;margin:3rem 0;border-top:2px solid var(--ink)}
+.rows li{display:grid;grid-template-columns:4rem 1fr auto 11rem;align-items:baseline;gap:1rem;padding:1.2rem 0;border-bottom:1px solid rgba(17,17,17,.3);animation:rin .5s both}
+@keyframes rin{from{opacity:0;transform:translateX(-24px)}}
+.rows .nm{font-size:clamp(1.4rem,3.6vw,3.2rem);font-weight:900;letter-spacing:-.03em;text-transform:uppercase;line-height:1}
+.rows li.edge .nm{font-weight:600;color:var(--mut)}
+.rows .sc{font-weight:800;font-size:1.1rem;text-align:right}
+.rows .mu{text-align:right}
+.sum{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2.5rem}
+.sum b{display:block;font-size:2rem;font-weight:900;letter-spacing:-.03em;text-transform:uppercase}
+/* library */
+.chips{display:flex;gap:.6rem;flex-wrap:wrap;margin:2rem 0}
+.chip{min-height:44px;padding:0 1.1rem;border:2px solid var(--ink);border-radius:999px;font-weight:800;font-size:.78rem;letter-spacing:.1em;transition:all .2s}
+.chip:hover{background:var(--ink);color:var(--lt)}.chip[aria-pressed=true]{background:var(--ac);color:var(--ink)}
+.lib{border-top:2px solid var(--ink)}
+.ex{border-bottom:1px solid rgba(17,17,17,.3)}
+.ex>button{width:100%;display:grid;grid-template-columns:2fr 1fr 1.2fr 1fr 2rem;gap:1rem;align-items:center;padding:1.1rem 0;text-align:left;min-height:64px}
+.ex>button:hover .n{transform:translateX(10px)}
+.ex .n{font-weight:900;font-size:1.3rem;letter-spacing:-.02em;text-transform:uppercase;transition:transform .25s}
+.ex .pl{font-size:1.5rem;font-weight:400;transition:transform .3s}
+.ex[data-o="1"] .pl{transform:rotate(45deg)}
+.ex .dt{display:none;padding:0 0 1.4rem;max-width:60ch;animation:rin .35s both}
+.ex[data-o="1"] .dt{display:block}
+/* tracker */
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin:2rem 0}
+.tg b{display:block;font-size:clamp(2.2rem,6vw,4.5rem);font-weight:900;letter-spacing:-.04em;line-height:1}
+.cw{overflow-x:auto;border-top:2px solid var(--ink);padding-top:1rem}
+.chart{display:block;width:100%;min-width:620px;height:auto;overflow:visible}
+.chart text{font-family:inherit;font-size:13px;font-weight:700;letter-spacing:.06em;fill:var(--mut)}
+.chart .vl{fill:var(--ink);font-size:14px;font-weight:900}
+.chart .gl{stroke:rgba(17,17,17,.2);stroke-width:1}
+.chart .ln{fill:none;stroke:var(--ink);stroke-width:3;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.2s .1s cubic-bezier(.2,.7,.2,1) forwards}
+.chart circle{stroke:var(--ink);stroke-width:2;transition:r .2s}
+.chart circle:hover,.chart circle:focus-visible{r:9}
+@keyframes draw{to{stroke-dashoffset:0}}
+.tn{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-top:1.5rem}
+/* about + footer */
+#about h2{font-size:clamp(2rem,6.4vw,6.4rem);max-width:16ch}
+#about p{font-size:1.25rem;max-width:44ch;margin:2rem 0}
+footer{padding:4rem 5vw 2rem}
+footer .fw{font-size:30vw;font-weight:900;letter-spacing:-.07em;line-height:.8;color:var(--ac)}
+.fm{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2rem;padding-top:1rem;border-top:1px solid #444}
+/* overlay */
+.ov{position:fixed;inset:0;z-index:80;background:var(--ink);color:var(--lt);padding:1.2rem 5vw 2rem;display:flex;flex-direction:column;overflow:auto}
+.ov[hidden],.ov [hidden]{display:none!important}
+.ovh{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem}
+.ovh button{min-height:44px;padding:0 1rem;border:2px solid #555;border-radius:999px}
+.ov .pbar{background:#333;margin:.6rem 0 1rem}.ov .pbar i{background:var(--ac)}
+.dots{list-style:none;display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1rem}
+.dots li{width:18px;height:18px;border-radius:50%;border:2px solid #777;transition:all .3s}
+.dots li.d{background:var(--ac);border-color:var(--ac)}
+.dots li.c{border-color:var(--ac);box-shadow:0 0 0 4px rgba(198,244,50,.3);background:var(--ink)}
+.pane{flex:1;display:flex;flex-direction:column;justify-content:center;gap:1rem;animation:rin .45s both}
+.pane h2{font-size:clamp(2.6rem,9vw,8.5rem)}
+.rep{font-size:clamp(7rem,26vw,22rem);font-weight:900;letter-spacing:-.06em;line-height:.8;color:var(--ac)}
+.how{max-width:50ch;font-size:1.1rem}
+.acts{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem}
+.acts .btn{flex:1 1 220px}
+.ringw{position:relative;width:min(70vw,360px);aspect-ratio:1;margin:0 auto}
+.ringw svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ringw circle{fill:none;stroke-width:8}
+.ringw .tx{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:clamp(3.5rem,13vw,6rem);font-weight:900;letter-spacing:-.04em}
+.cs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.cs b{display:block;font-size:clamp(2.2rem,7vw,5rem);font-weight:900;letter-spacing:-.04em;line-height:1}
+/* cursor */
+.cur{position:fixed;top:0;left:0;z-index:9999;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:#fff;mix-blend-mode:difference;pointer-events:none;display:none;transition:width .25s,height .25s,margin .25s,background .25s;font-size:.8rem;font-weight:900;align-items:center;justify-content:center;color:transparent}
+.cur.h{width:44px;height:44px;margin:-22px 0 0 -22px}
+.cur.go{width:84px;height:84px;margin:-42px 0 0 -42px;background:var(--ac);color:var(--ink);mix-blend-mode:normal}
+@media (hover:hover) and (pointer:fine){.cur{display:flex}}
+@media (max-width:820px){
+section{padding:5rem 6vw}nav a{padding:.6rem .5rem;font-size:.7rem}
+.tiles.c4{grid-template-columns:repeat(2,1fr)}.tiles.c3{grid-template-columns:1fr}.tile{min-height:120px}
+.nums{grid-template-columns:1fr}.sum{grid-template-columns:1fr 1fr}
+.rows li{grid-template-columns:2.4rem 1fr auto}.rows .mu{grid-column:2/4;text-align:left}
+.ex>button{grid-template-columns:1fr 2rem}.ex .x{display:none}
+.orb{opacity:.6}.trail{display:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style></head><body>
+<div class="cur" id="cur" aria-hidden="true"></div>
+<header><a href="#top" class="logo" data-c>FORM</a><nav aria-label="Main"><a href="#build" data-c>BUILD</a><a href="#progress" data-c>PROGRESS</a><a href="#library" data-c>EXERCISES</a><a href="#about" data-c>ABOUT</a></nav></header>
+<main>
+<section id="top" aria-label="Intro">
+<div class="fx ghost" style="--d:-30" aria-hidden="true">FORM</div>
+<div class="fx orb" style="--d:50" aria-hidden="true"></div>
+<div class="fx trail" style="--d:-80" aria-hidden="true"></div>
+<div class="hero-in">
+<p class="meta">ADAPTIVE TRAINING / 2026</p>
+<h1 class="big"><span><i>TRAIN FOR</i></span><span><i>THE DAY</i></span><span><i>YOU ACTUALLY</i></span><span><i>HAVE.</i></span></h1>
+<p class="lead">Build a workout around your time, location and goal.</p>
+<div class="ctas"><a class="btn p" href="#build" data-c>BUILD MY WORKOUT →</a><a class="btn s" href="#library" data-c>EXPLORE EXERCISES</a></div>
+</div>
+<div class="hero-foot meta"><span>01 / 04</span><span>FORM</span><span>MOVE / TRAIN / RECOVER</span></div>
+</section>
+
+<section class="dk stats" aria-label="Why FORM">
+<h2 class="big">NO TWO DAYS LOOK THE SAME. WHY SHOULD YOUR WORKOUT?</h2>
+<div class="nums"><div><b>15–60</b><span class="meta">MINUTES</span></div><div><b data-n="3">03</b><span class="meta">TRAINING LOCATIONS</span></div><div><b data-n="4">04</b><span class="meta">TRAINING GOALS</span></div></div>
+<a class="btn a" href="#build" data-c>CREATE YOUR SESSION ↓</a>
+</section>
+
+<section id="build" aria-label="Build your workout">
+<div class="bh"><h2 class="big">WHAT DOES TODAY LOOK LIKE?</h2>
+<div class="stepper meta" aria-label="Progress"><div id="p1">01 — TIME</div><div id="p2">02 — PLACE</div><div id="p3">03 — GOAL</div></div></div>
+<div class="pbar"><i id="bfill"></i></div>
+<div class="q"><h3>HOW MUCH TIME DO YOU HAVE?</h3><div class="tiles c4" data-k="time"></div></div>
+<div class="q"><h3>WHERE ARE YOU TRAINING?</h3><div class="tiles c3" data-k="place"></div></div>
+<div class="q"><h3>WHAT DO YOU NEED TODAY?</h3><div class="tiles c4" data-k="goal"></div></div>
+<div class="bar-sum"><div><p class="meta mut">YOUR CHOICES</p><p class="meta" id="sel" aria-live="polite"></p></div><button class="btn p" id="gen" data-c disabled>BUILD MY SESSION →</button></div>
+</section>
+<div id="bt" role="status"><p class="meta">FORM</p><h2 class="big">BUILDING YOUR SESSION</h2><i></i></div>
+
+<section id="session" hidden aria-label="Your session">
+<div class="strip meta" id="strip"></div>
+<h2 class="big">YOUR SESSION</h2>
+<div class="clock" id="clock"></div><p class="meta" id="exc"></p>
+<ol class="rows" id="rows"></ol>
+<div class="sum" id="sum"></div>
+<div class="ctas"><button class="btn p" id="start" data-go>START WORKOUT →</button><button class="btn s" id="redo" data-c>REBUILD SESSION</button></div>
+</section>
+
+<section id="progress" aria-label="Progress tracker" style="border-top:2px solid var(--ink)">
+<p class="meta mut">PROGRESS TRACKER</p><h2 class="big" style="font-size:clamp(2.2rem,6vw,6rem)">LAST 14 DAYS</h2>
+<div class="tg" id="tg"></div>
+<div class="chips" id="tm" role="group" aria-label="Chart metric"></div>
+<div class="cw"><svg class="chart" id="chart" viewBox="0 0 700 300" role="group" aria-label="Line graph of training over the last 14 days"></svg></div>
+<p class="mut" id="tmsg" style="margin-top:1rem"></p>
+<div class="tn"><a class="btn p" href="#build" data-c>BUILD A SESSION →</a><button class="btn s" id="tclr" data-c>CLEAR HISTORY</button></div>
+</section>
+
+<section id="library" aria-label="Exercise library" style="border-top:2px solid var(--ink)">
+<p class="meta mut">EXERCISE LIBRARY</p><h2 class="big" style="font-size:clamp(2.2rem,6vw,6rem)">EVERY MOVE IN FORM</h2>
+<div class="chips" id="chips" role="group" aria-label="Filter exercises"></div>
+<div class="lib" id="lib"></div>
+</section>
+
+<section id="about" class="dk" aria-label="About">
+<h2 class="big">TRAINING SHOULD FIT INTO LIFE. NOT THE OTHER WAY AROUND.</h2>
+<p>FORM is an experimental workout-planning experience built around three simple variables: how much time you have, where you are and what you want from today’s session.</p>
+<p class="meta">DESIGNED + DEVELOPED AS AN INTERACTIVE WEB EXPERIENCE</p>
+</section>
+</main>
+<footer class="dk"><div class="fw" aria-hidden="true">FORM</div>
+<div class="fm meta"><span>ADAPTIVE TRAINING</span><span>UI/UX<br>INTERACTION DESIGN<br>CREATIVE DEVELOPMENT</span><span>2026</span></div></footer>
+
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-label="Active workout" hidden>
+<div class="ovh"><span class="logo">FORM</span><span class="meta" id="aCount"></span><button class="meta" id="aEnd" data-c>END</button></div>
+<div class="meta mut" id="plabel">PROGRESS</div><div class="pbar"><i id="pfill"></i></div><ol class="dots" id="dots" aria-hidden="true"></ol>
+<section class="pane" id="work"></section>
+<section class="pane" id="rest" hidden>
+<p class="meta mut" id="upnext"></p>
+<div class="ringw"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="90" stroke="#333"/><circle id="rc" cx="100" cy="100" r="90" stroke="#C6F432" stroke-dasharray="565.5" stroke-dashoffset="0" stroke-linecap="round"/></svg><div class="tx"><span class="meta">REST</span><span id="rt" role="timer">00:45</span></div></div>
+<div class="acts"><button class="btn s" id="rp" data-c>PAUSE</button><button class="btn a" id="rs" data-c>SKIP REST</button></div>
+</section>
+<section class="pane" id="done" hidden>
+<h2 class="big">SESSION<br>COMPLETE.</h2>
+<div class="ringw" style="width:min(50vw,220px);margin:0"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="90" stroke="#333"/><circle id="dr" cx="100" cy="100" r="90" stroke="#C6F432" stroke-dasharray="565.5" stroke-dashoffset="565.5" stroke-linecap="round" style="transition:stroke-dashoffset 1.2s cubic-bezier(.2,.7,.2,1)"/></svg><div class="tx" style="font-size:2.6rem">✓</div></div>
+<div class="cs"><div><b id="d1"></b><span class="meta mut">TRAINING TIME</span></div><div><b id="d2"></b><span class="meta mut">EXERCISES</span></div><div><b id="d3"></b><span class="meta mut">SETS COMPLETED</span></div></div>
+<p class="big" style="font-size:clamp(1.6rem,4vw,3rem)">YOU SHOWED UP.<br>THAT COUNTS.</p>
+<div class="acts"><button class="btn a" id="again" data-c>BUILD ANOTHER SESSION</button><button class="btn s" id="vprog" data-c>VIEW PROGRESS</button><button class="btn s" id="home" data-c>BACK TO HOME</button></div>
+</section>
+</div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const LOC={h:"HOME",g:"GYM",o:"OUTDOORS"};
+/* name,category,locations,difficulty,sets,amount,unit(r reps,e reps/side,s sec,f sec/side),muscle,how */
+const RAW=[
+["Bodyweight Squat","strength","hgo","Beginner",3,12,"r","Lower Body","Feet shoulder-width, sit your hips back and down, then drive up through your heels."],
+["Push-Up","strength","hgo","Intermediate",3,10,"r","Upper Body","Keep your body in a straight line, lower under control and press through your palms."],
+["Reverse Lunge","strength","hgo","Beginner",3,10,"e","Lower Body","Step back, lower until both knees bend about 90°, then push through the front foot to stand."],
+["Glute Bridge","strength","hgo","Beginner",3,12,"r","Glutes","Lie on your back, knees bent. Press through your heels and lift your hips, then lower slowly."],
+["Plank","core","hgo","Beginner",3,30,"s","Core","Forearms down, body in one line from head to heels. Breathe steadily."],
+["Mountain Climbers","cardio","hgo","Intermediate",3,30,"s","Full Body","From a high plank, drive your knees towards your chest in a steady rhythm."],
+["Jumping Jacks","cardio","hgo","Beginner",3,40,"s","Full Body","Jump feet out while raising your arms overhead, then return. Land softly."],
+["High Knees","cardio","hgo","Beginner",3,30,"s","Full Body","Run on the spot, lifting your knees to hip height. Stay tall."],
+["Burpees","cardio","hgo","Intermediate",3,8,"r","Full Body","Squat, step or jump back to plank, return and stand. Go at a pace you can control."],
+["Dead Bug","core","hg","Beginner",3,8,"e","Core","On your back, lower the opposite arm and leg while keeping your lower back gently flat."],
+["Bird Dog","core","hgo","Beginner",3,8,"e","Core","On hands and knees, extend the opposite arm and leg and hold level for a beat."],
+["Side Plank","core","hgo","Intermediate",3,20,"f","Core","On one forearm, lift your hips so the body forms a straight line."],
+["Walking Lunge","strength","go","Intermediate",3,10,"e","Lower Body","Step forward into a lunge, then bring the back foot through into the next step."],
+["Calf Raise","strength","hgo","Beginner",3,15,"r","Lower Body","Rise onto the balls of your feet, pause, then lower slowly."],
+["Hip Mobility Flow","mobility","hgo","Beginner",2,45,"s","Hips","Move through slow hip circles and rocking positions at a comfortable range."],
+["World’s Greatest Stretch","mobility","hgo","Beginner",2,5,"e","Full Body","Lunge, place a hand down, rotate your chest open towards the front knee."],
+["Shoulder Rotation","mobility","hgo","Beginner",2,10,"r","Shoulders","Make slow, controlled arm circles, forwards then backwards."],
+["Cat-Cow","mobility","hgo","Beginner",2,10,"r","Spine","On hands and knees, alternate between arching and rounding your back with your breath."],
+["Goblet Squat","strength","g","Beginner",3,10,"r","Lower Body","Hold a dumbbell at your chest, squat with an upright torso and stand tall."],
+["Dumbbell Row","strength","g","Beginner",3,10,"e","Back","Hinge forward, pull the dumbbell towards your hip, lower with control."],
+["Dumbbell Shoulder Press","strength","g","Beginner",3,10,"r","Shoulders","Press the dumbbells overhead without arching your back, then lower slowly."],
+["Lat Pulldown","strength","g","Beginner",3,10,"r","Back","Pull the bar to your upper chest, elbows down, then return under control."],
+["Leg Press","strength","g","Beginner",3,12,"r","Lower Body","Press through your whole foot and stop short of locking your knees."],
+["Cable Row","strength","g","Beginner",3,12,"r","Back","Sit tall, pull the handle to your ribs and squeeze your shoulder blades gently."],
+["Stationary Bike","cardio","g","Beginner",3,120,"s","Legs","Pedal at a steady pace you could keep talking at."],
+["Brisk Run Intervals","cardio","o","Intermediate",3,60,"s","Full Body","Run at a brisk, comfortable pace. Walk between sets to recover."],
+["Bench Step-Up","strength","og","Beginner",3,10,"e","Lower Body","Step onto a sturdy bench or step, drive through the heel, step down slowly."],
+["Incline Push-Up","strength","og","Beginner",3,12,"r","Upper Body","Hands on a bench or rail, body straight, lower your chest and press away."]
+];
+const E=RAW.map(([name,cat,loc,diff,sets,amt,u,muscle,how])=>({name,cat,loc,diff,sets,amt,u,muscle,how}));
+const FMT=e=>({r:`${e.sets} × ${e.amt}`,e:`${e.sets} × ${e.amt} / SIDE`,s:`${e.sets} × ${e.amt} SEC`,f:`${e.sets} × ${e.amt} SEC / SIDE`})[e.u];
+const UNIT={r:"REPS",e:"REPS PER SIDE",s:"SECONDS",f:"SECONDS PER SIDE"};
+const CFG={15:{w:3,m:9,c:3,n:3,s:2},30:{w:5,m:20,c:5,n:4,s:3},45:{w:7,m:31,c:7,n:5,s:3},60:{w:10,m:40,c:10,n:6,s:3}};
+const OPT={
+time:[[15,"15","MIN"],[30,"30","MIN"],[45,"45","MIN"],[60,"60","MIN"]],
+place:[["home","HOME","Bodyweight / minimal equipment",'<svg viewBox="0 0 56 32"><path d="M6 17 28 3l22 14M12 14v15h32V14"/></svg>'],["gym","GYM","Full equipment",'<svg viewBox="0 0 56 32"><path d="M4 16h48M12 6v20M18 10v12M44 6v20M38 10v12"/></svg>'],["outdoors","OUTDOORS","Open-space training",'<svg viewBox="0 0 56 32"><path d="M2 26h52M16 26a12 12 0 0 1 24 0"/></svg>']],
+goal:[["strength","STRENGTH","Build power + control"],["full","FULL BODY","Balanced total-body session"],["cardio","CARDIO","Raise your heart rate"],["mobility","MOBILITY","Move better + recover"]]};
+const GL={strength:"STRENGTH",full:"FULL BODY",cardio:"CARDIO",mobility:"MOBILITY"};
+const S={time:30,place:null,goal:null,plan:null};
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const pad=n=>String(n).padStart(2,"0");
+
+/* builder UI */
+function drawTiles(){$$(".tiles").forEach(w=>{const k=w.dataset.k;w.innerHTML=OPT[k].map(o=>`<button class="tile" data-c data-v="${o[0]}" aria-pressed="${S[k]===o[0]}">${k==="time"?`<b>${o[1]}</b><small class="meta">${o[2]}</small>`:`${o[3]||""}<span><b>${o[1]}</b><br><small>${o[2]}</small></span>`}</button>`).join("")})}
+function sync(){
+ $$(".tiles").forEach(w=>$$(".tile",w).forEach(t=>t.setAttribute("aria-pressed",String(String(S[w.dataset.k])===t.dataset.v))));
+ const n=[S.time,S.place,S.goal].filter(Boolean).length;
+ ["time","place","goal"].forEach((k,i)=>$("#p"+(i+1)).classList.toggle("on",!!S[k]));
+ $("#bfill").style.width=n/3*100+"%";
+ $("#sel").textContent=`${S.time} MIN / ${S.place?S.place.toUpperCase():"CHOOSE A PLACE"} / ${S.goal?GL[S.goal]:"CHOOSE A GOAL"}`;
+ $("#gen").disabled=!(S.place&&S.goal);
+}
+document.addEventListener("click",e=>{const t=e.target.closest(".tile");if(!t)return;const k=t.parentElement.dataset.k;S[k]=k==="time"?+t.dataset.v:t.dataset.v;sync()});
+
+/* generation */
+function gen(){
+ const c=CFG[S.time],code=S.place[0],g=S.goal;
+ const pool=E.filter(e=>e.loc.includes(code)&&(g==="full"?e.cat!=="mobility":e.cat===g||e.cat==="core"));
+ const ord=g==="full"?shuffle(pool):[...shuffle(pool.filter(e=>e.cat===g)),...shuffle(pool.filter(e=>e.cat==="core"))];
+ const main=[],seen=new Set();
+ while(main.length<c.n&&ord.length){let i=ord.findIndex(e=>!seen.has(e.muscle));if(i<0)i=0;const e=ord.splice(i,1)[0];seen.add(e.muscle);main.push({...e,sets:Math.min(e.sets,c.s),t:"m"})}
+ const wu={name:"Warm Up",t:"w",sets:1,amt:c.w,u:"min",muscle:"MOBILITY",how:"Easy marching or jogging on the spot, arm circles and hip circles. Start slow and build up."};
+ const cd={name:"Cooldown",t:"c",sets:1,amt:c.c,u:"min",muscle:"MOBILITY",how:"Slow your breathing and move through gentle full-body stretches. Nothing should hurt."};
+ return {steps:[wu,...main,cd],main,min:S.time};
+}
+function renderSession(fresh){
+ const p=S.plan,pl=S.place.toUpperCase();
+ $("#session").hidden=false;
+ $("#strip").innerHTML=`<span>TODAY</span><span>${S.time} MIN</span><span>${pl}</span><span>${GL[S.goal]}</span>`;
+ $("#clock").textContent=`${S.time}:00`;$("#exc").textContent=`${p.steps.length} EXERCISES`;
+ $("#rows").innerHTML=p.steps.map((s,i)=>{const edge=s.t!=="m";return `<li class="${edge?"edge":""}" style="animation-delay:${i*70}ms"><span class="meta mut">${pad(i+1)}</span><span class="nm">${s.name}</span><span class="sc">${edge?s.amt+" MIN":FMT(s)}</span><span class="meta mu mut">${s.muscle}</span></li>`}).join("");
+ $("#sum").innerHTML=[["DURATION",S.time+" MIN"],["EXERCISES",pad(p.steps.length)],["FOCUS",GL[S.goal]],["LOCATION",pl]].map(([a,b])=>`<div><p class="meta mut">${a}</p><b>${b}</b></div>`).join("");
+ if(fresh)$("#session").scrollIntoView({behavior:RM?"auto":"smooth"});
+}
+$("#gen").onclick=()=>{
+ const bt=$("#bt");bt.classList.add("on");
+ setTimeout(()=>{S.plan=gen();renderSession(true);bt.classList.remove("on")},RM?200:1100);
+};
+$("#redo").onclick=()=>{const old=S.plan.main.map(e=>e.name).join();let p;for(let i=0;i<8;i++){p=gen();if(p.main.map(e=>e.name).join()!==old)break}S.plan=p;renderSession(false)};
+
+/* active workout */
+let A=null,tmr=null;
+const show=id=>["work","rest","done"].forEach(k=>$("#"+k).hidden=k!==id);
+function openOv(){document.body.style.overflow="hidden";$("#ov").hidden=false;$("#ov").scrollTop=0;$("#aEnd").focus()}
+function closeOv(){clearInterval(tmr);$("#ov").hidden=true;document.body.style.overflow=""}
+$("#start").onclick=()=>{A={steps:S.plan.steps,i:0,set:1,done:S.plan.steps.map(()=>0)};openOv();renderWork()};
+function prog(){
+ const n=A.steps.length;
+ $("#aCount").textContent=`${pad(Math.min(A.i+1,n))} / ${pad(n)}`;
+ $("#pfill").style.width=(A.i/n*100)+"%";
+ $("#dots").innerHTML=A.steps.map((s,i)=>`<li class="${i<A.i?"d":i===A.i?"c":""}" title="${s.name}"></li>`).join("");
+}
+function renderWork(){
+ clearInterval(tmr);prog();show("work");
+ const s=A.steps[A.i],edge=s.t!=="m",lbl=edge?"MINUTES":UNIT[s.u];
+ $("#work").innerHTML=`<p class="meta mut">${edge?s.muscle:s.muscle+" — "+FMT(s)}</p><h2 class="big">${s.name}</h2><div class="rep" aria-label="${s.amt} ${lbl}">${s.amt}</div><p class="meta">${lbl}</p>${edge?"":`<p class="meta">SET <b style="font-size:1.6rem">${A.set} / ${s.sets}</b></p>`}
+ <div><button class="btn s meta" id="howb" data-c aria-expanded="false">HOW TO</button><p class="how" id="how" hidden style="margin-top:1rem"><b>${s.name.toUpperCase()}</b><br>“${s.how}”</p></div>
+ <div class="acts"><button class="btn s" id="prev" data-c ${A.i===0&&A.set===1?"disabled":""}>← PREVIOUS</button><button class="btn a" id="comp" data-go>${edge?"DONE →":"COMPLETE SET →"}</button></div>`;
+ $("#howb").onclick=e=>{const h=$("#how");h.hidden=!h.hidden;e.currentTarget.setAttribute("aria-expanded",String(!h.hidden))};
+ $("#prev").onclick=prev;$("#comp").onclick=complete;$("#comp").focus({preventScroll:true});
+}
+function complete(){
+ const s=A.steps[A.i];A.done[A.i]=A.set;
+ if(A.set<s.sets){A.set++;return rest(`NEXT: SET ${A.set} / ${s.sets} — ${s.name}`)}
+ A.i++;A.set=1;
+ if(A.i>=A.steps.length)return finish();
+ const nx=A.steps[A.i];
+ s.t==="m"&&nx.t==="m"?(prog(),rest("NEXT: "+nx.name)):renderWork();
+}
+function prev(){
+ if(A.set>1){A.set--;A.done[A.i]=A.set-1}
+ else if(A.i>0){A.i--;A.set=A.steps[A.i].sets;A.done[A.i]=A.set-1}
+ renderWork();
+}
+function rest(label){
+ prog();show("rest");$("#upnext").textContent=label;
+ const T=45000;let end=Date.now()+T,left=T,paused=false;
+ const rp=$("#rp");rp.textContent="PAUSE";
+ const tick=()=>{if(!paused)left=end-Date.now();
+  if(left<=0){clearInterval(tmr);return renderWork()}
+  const sec=Math.ceil(left/1000);$("#rt").textContent=`00:${pad(sec)}`;
+  $("#rc").style.strokeDashoffset=565.5*(1-left/T)};
+ clearInterval(tmr);tmr=setInterval(tick,100);tick();
+ rp.onclick=()=>{paused=!paused;if(!paused)end=Date.now()+left;rp.textContent=paused?"RESUME":"PAUSE"};
+ $("#rs").onclick=()=>{clearInterval(tmr);renderWork()};
+ $("#rs").focus({preventScroll:true});
+}
+function countUp(el,to,fmt=v=>v,dur=900){
+ if(RM){el.textContent=fmt(to);return}
+ const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/dur);el.textContent=fmt(Math.round(to*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(f)})(t0);
+}
+function finish(){
+ clearInterval(tmr);A.i=A.steps.length;prog();$("#pfill").style.width="100%";
+ $("#dots").innerHTML=A.steps.map(s=>`<li class="d" title="${s.name}"></li>`).join("");
+ $("#aCount").textContent="DONE";show("done");
+ const sets=A.steps.reduce((a,s,i)=>a+(s.t==="m"?A.done[i]:0),0);
+ {const L=getLog();L.push({d:dkey(new Date()),min:S.time,sets,ex:A.steps.length});saveLog(L.slice(-365));drawProg()}
+ countUp($("#d1"),S.time,v=>pad(v)+":00");countUp($("#d2"),A.steps.length,pad);countUp($("#d3"),sets,pad);
+ $("#dr").style.strokeDashoffset="565.5";requestAnimationFrame(()=>requestAnimationFrame(()=>$("#dr").style.strokeDashoffset="0"));
+ $("#again").focus({preventScroll:true});
+}
+$("#aEnd").onclick=()=>{closeOv();$("#session").scrollIntoView()};
+$("#again").onclick=()=>{closeOv();$("#build").scrollIntoView({behavior:RM?"auto":"smooth"})};
+$("#home").onclick=()=>{closeOv();scrollTo({top:0,behavior:RM?"auto":"smooth"})};
+addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#ov").hidden)closeOv()});
+
+/* library */
+const FILTERS=["all","strength","cardio","mobility","core","home","gym","outdoors"];let LF="all";
+function drawLib(){
+ $("#chips").innerHTML=FILTERS.map(f=>`<button class="chip" data-c data-f="${f}" aria-pressed="${f===LF}">${f.toUpperCase()}</button>`).join("");
+ const list=E.filter(e=>LF==="all"||e.cat===LF||(["home","gym","outdoors"].includes(LF)&&e.loc.includes(LF[0])));
+ $("#lib").innerHTML=list.map((e,i)=>`<div class="ex" data-o="0"><button data-c aria-expanded="false"><span class="n">${e.name}</span><span class="meta x">${e.cat}</span><span class="meta x mut">${[...e.loc].map(c=>LOC[c]).join(" / ")}</span><span class="meta x">${e.diff}</span><span class="pl" aria-hidden="true">+</span></button><div class="dt"><p class="meta mut">${e.muscle} — ${FMT(e)}</p><p style="margin-top:.5rem">${e.how}</p></div></div>`).join("");
+}
+$("#chips").addEventListener("click",e=>{const c=e.target.closest(".chip");if(c){LF=c.dataset.f;drawLib()}});
+$("#lib").addEventListener("click",e=>{const b=e.target.closest(".ex>button");if(!b)return;const ex=b.parentElement,o=ex.dataset.o==="1";ex.dataset.o=o?"0":"1";b.setAttribute("aria-expanded",String(!o))});
+
+/* progress tracker (saved in this browser via localStorage) */
+const LK="form-log";let TM="min";
+const getLog=()=>{try{return JSON.parse(localStorage.getItem(LK))||[]}catch(e){return[]}};
+const saveLog=l=>{try{localStorage.setItem(LK,JSON.stringify(l))}catch(e){}};
+const dkey=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+function drawProg(){
+ const log=getLog(),days=[];
+ for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push({k:dkey(d),n:d.getDate(),min:0,sets:0,c:0})}
+ log.forEach(l=>{const x=days.find(y=>y.k===l.d);if(x){x.min+=l.min;x.sets+=l.sets;x.c++}});
+ const set=new Set(log.map(l=>l.d));let st=0;const c=new Date();if(!set.has(dkey(c)))c.setDate(c.getDate()-1);
+ while(set.has(dkey(c))){st++;c.setDate(c.getDate()-1)}
+ $("#tg").innerHTML=[["SESSIONS",log.length],["MINUTES",log.reduce((a,l)=>a+l.min,0)],["DAY STREAK",st]].map(([a,b])=>`<div><b>${b}</b><span class="meta mut">${a}</span></div>`).join("");
+ $("#tm").innerHTML=[["min","MINUTES"],["sets","SETS"]].map(([k,l])=>`<button class="chip" data-c data-m="${k}" aria-pressed="${k===TM}">${l}</button>`).join("");
+ const vals=days.map(d=>d[TM]),m=Math.max(...vals),top=m<=5?5:Math.ceil(m/10)*10,L=44,R=684,T=24,B=250,w=(R-L)/13;
+ const X=i=>L+i*w,Y=v=>B-v/top*(B-T);
+ let g="";
+ [0,.5,1].forEach(f=>{const y=Y(top*f);g+=`<line class="gl" x1="${L}" x2="${R}" y1="${y}" y2="${y}"/><text x="${L-8}" y="${y+4}" text-anchor="end">${Math.round(top*f)}</text>`});
+ days.forEach((d,i)=>{g+=`<text x="${X(i)}" y="${B+24}" text-anchor="middle">${i===13?"TODAY":d.n}</text>`});
+ g+=`<path class="ln" pathLength="1" d="${vals.map((v,i)=>(i?"L":"M")+X(i)+" "+Y(v)).join(" ")}"/>`;
+ days.forEach((d,i)=>{const v=d[TM],lbl=`${d.k}: ${d.min} minutes, ${d.sets} sets, ${d.c} sessions`;
+  g+=`<circle cx="${X(i)}" cy="${Y(v)}" r="${v?6:3.5}" fill="${v?"#C6F432":"#F3F1EB"}" tabindex="0" role="img" aria-label="${lbl}"><title>${lbl}</title></circle>`;
+  if(v)g+=`<text class="vl" x="${X(i)}" y="${Y(v)-12}" text-anchor="middle">${v}</text>`});
+ $("#chart").innerHTML=g;
+ $("#tmsg").textContent=log.length?"Showing "+(TM==="min"?"session minutes":"completed sets")+" per day. Saved on this device only.":"No sessions yet. Finish a workout and it shows up here.";
+}
+$("#tm").addEventListener("click",e=>{const c=e.target.closest(".chip");if(c){TM=c.dataset.m;drawProg()}});
+$("#tclr").onclick=()=>{if(getLog().length&&confirm("Clear all saved sessions on this device?")){saveLog([]);drawProg()}};
+$("#vprog").onclick=()=>{closeOv();$("#progress").scrollIntoView({behavior:RM?"auto":"smooth"})};
+
+/* hero parallax + stats count + cursor */
+const hero=$("#top");
+hero.addEventListener("mousemove",e=>{if(RM)return;const r=hero.getBoundingClientRect();hero.style.setProperty("--mx",((e.clientX-r.left)/r.width-.5).toFixed(3));hero.style.setProperty("--my",((e.clientY-r.top)/r.height-.5).toFixed(3))});
+const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){countUp(en.target,+en.target.dataset.n,pad,1000);io.unobserve(en.target)}}),{threshold:.6});
+$$("[data-n]").forEach(el=>io.observe(el));
+const cur=$("#cur");
+if(matchMedia("(hover:hover) and (pointer:fine)").matches){
+ let x=0,y=0,cx=0,cy=0;
+ addEventListener("mousemove",e=>{x=e.clientX;y=e.clientY});
+ (function f(){cx+=(x-cx)*.22;cy+=(y-cy)*.22;cur.style.transform=`translate(${cx}px,${cy}px)`;requestAnimationFrame(f)})();
+ document.addEventListener("mouseover",e=>{const t=e.target.closest("a,button,[data-c],[data-go]");const go=t&&t.hasAttribute("data-go")&&!t.disabled;cur.classList.toggle("h",!!t&&!go);cur.classList.toggle("go",!!go);cur.textContent=go?"GO →":""});
+}
+drawTiles();sync();drawLib();drawProg();
+</script>
+</body></html>
